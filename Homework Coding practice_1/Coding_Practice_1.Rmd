@@ -1,0 +1,10 @@
+---
+title: "Coding Practice 1"
+subtitle: "PLPA-5820 (Spring 2025)"
+author: Gabriel A. A. Silva
+date: 2025-02-05
+format:
+  pdf
+---
+
+I am already familiar with R environments and did not find anything new in this practice.
