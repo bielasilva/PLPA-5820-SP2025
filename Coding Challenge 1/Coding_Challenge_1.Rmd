@@ -119,6 +119,9 @@ zdf_row26 <- zdf[26, ]
 zdf_row180 <- zdf[180, "zsquared"]
 ```
 
+![GitHub Screenshot](Screenshot.png "GitHub Screenshot")
+
+
 ### 5 pts. Download the Tips.csv file from Canvas. Use the read.csv() function to read the data into R so that the missing values are properly coded. **Note the missing values are reported in the data as a period (i.e., “.”). How do you know the data were read correctly?
 
 ```{r}

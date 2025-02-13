@@ -1,0 +1,87 @@
+---
+title: "Homework: Coding Notes Data Visualization 1"
+subtitle: "PLPA-5820 (Spring 2025)"
+author: Gabriel A. A. Silva
+date: 2025-02-12
+format:
+  pdf
+---
+
+## Instructions
+
+Watch the videos associated with the introduction to data visualization in R and turn in your notes (R code). 
+
+## Notes
+
+I was familiar with the packages before. The demonstrated way to add significance letters was interesting, I'm used to doing differently but I think I'll start using this way. 
+ 
+I am unsure if the package `tidyplots` is known by you, but I think it is a good package for data visualization by people not familiar with ggplot2's syntax. You can find more info at https://tidyplots.org/. 
+
+## Adding significance letters to represent multiple pairwise comparisons of an ANOVA
+
+```{r}
+# Load libraries
+library(tidyverse)
+library(lme4)
+library(emmeans)
+library(multcomp)
+library(multcompView)
+
+# Load data
+STAND <- read.csv("Bull_richness.csv", na.strings = "na")
+
+# Filter data
+ave_stand <- STAND %>%
+  group_by(Crop, Collection, Rep, Fungicide, Treatment) %>%
+  summarize(
+    ave.stand = mean(richness, na.rm=TRUE))
+
+# Run ANOVA
+lm <- lmer(ave.stand ~ Treatment * Crop * Fungicide + (1|Rep), data = ave_stand)
+
+# estimate lsmeans of variety within siteXyear
+lsmeans <- emmeans(lm, ~ Treatment + Fungicide | Crop ) 
+
+# contrast with Tukey ajustment
+Results_lsmeansEC <- multcomp::cld(lsmeans, alpha = 0.05, reversed = TRUE,
+                                   details = TRUE,  Letters = letters) 
+Results_lsmeansEC
+
+# Extracting the letters for the bars
+sig.diff.letters <- data.frame(Results_lsmeansEC$emmeans$Crop, 
+                               Results_lsmeansEC$emmeans$Treatment,
+                               Results_lsmeansEC$emmeans$Fungicide,
+                               str_trim(Results_lsmeansEC$emmeans$.group))
+colnames(sig.diff.letters) <- c("Crop", 
+                                "Treatment",
+                                "Fungicide",
+                                "Letters")
+
+# for plotting with letters from significance test
+ave_stand2 <- ave_stand %>%
+  group_by(Crop, Treatment, Fungicide) %>%
+  dplyr::summarize(
+    ave.stand2 = mean(ave.stand, na.rm=TRUE),
+    se = sd(ave.stand)/sqrt(4)) %>%
+  left_join(sig.diff.letters) 
+
+### Stand bars ####
+ggplot(ave_stand, aes(x = Crop, y = ave.stand)) + 
+  stat_summary(fun=mean,geom="bar") +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Richness") + 
+  geom_jitter(width = 0.02, alpha = 0.5) +
+  geom_text(data = ave_stand2,
+            aes(label = Letters, y = ave.stand2+(3*se)),
+            vjust = -0.5) +
+  xlab("")+
+  theme_classic() +
+  theme(
+    strip.background = element_rect(color="white", fill="white",
+                                    size=1.5, linetype="solid"),
+    strip.text.x = element_text(size = 12, color = "black"),
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  facet_wrap(~Treatment + Fungicide, scales = "free_y")
+```
+
+
