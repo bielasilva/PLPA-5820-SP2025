@@ -1,0 +1,14 @@
+---
+title: "Homework: Markdown"
+subtitle: "PLPA-5820 (Spring 2025)"
+author: Gabriel A. A. Silva
+date: 2025-02-26
+format:
+  pdf
+---
+
+## Notes
+
+I was already familiar with R Markdown.
+
+Some things that were new were about the `variant: gfm` option for Markdown documents, which I didn't know about. Also, the `fs` package was new to me, I am used to creating file structures with the `tree` command in the terminal.
