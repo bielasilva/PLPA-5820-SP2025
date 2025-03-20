@@ -1,0 +1,17 @@
+---
+title: "Homework: Data Wrangling"
+subtitle: "PLPA-5820 (Spring 2025)"
+author: Gabriel A. A. Silva
+date: 2025-03-18
+format:
+  pdf
+---
+
+## Notes
+
+I was already familiar with `tidyverse` for data wrangling.
+
+I was not aware, however, that columns could be selected by name in ranges using the `:` operator.
+
+E.g. `select(SampleID, Crop, Compartment:Fungicide, richness) %>%`
+
