@@ -1,0 +1,41 @@
+---
+title: "Homework: Linear Models"
+subtitle: "PLPA-5820 (Spring 2025)"
+author: Gabriel A. A. Silva
+date: 2025-03-02
+format:
+  pdf
+---
+
+## Notes
+
+```{r}
+library(tidyverse)
+library(lme4)
+library(emmeans)
+library(multcomp)
+
+bull.rich <- read_csv("Bull_richness.csv")
+
+lm.inter <- lm(richness ~ GrowthStage*Fungicide, data = bull.rich)
+
+lsmeans <- emmeans(lm.inter, ~Fungicide|GrowthStage ) 
+Results_lsmeans <- cld(lsmeans, alpha = 0.05, reversed = TRUE, details = TRUE)
+
+lme1 <- lmer(richness ~ GrowthStage*Fungicide + (1|Rep), data = bull.rich)
+lsmeans_lme1 <- emmeans(lme1, ~Fungicide|GrowthStage )
+Results_lsmeans_lme1 <- cld(lsmeans_lme1, alpha = 0.05, reversed = TRUE, details = TRUE)
+
+ # add significance level as asterisks
+significance <- data.frame(GrowthStage = Results_lsmeans_lme1$comparisons$GrowthStage,
+           p.value = Results_lsmeans_lme1$comparisons$p.value) %>% 
+    mutate(sig = ifelse(p.value < 0.05, ifelse(p.value < 0.01, "***", "*"), NA)) %>%
+  mutate(Fungicide = '')
+  
+
+ggplot(bull.rich, aes(x = GrowthStage, y = richness, fill = Fungicide)) +
+  geom_boxplot() +
+  geom_text(data = significance, aes(x = GrowthStage, label = sig), y = 35, size = 6) +
+  theme_minimal()
+```
+
